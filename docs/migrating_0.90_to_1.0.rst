@@ -98,7 +98,7 @@ First, a bunch of setup:
     >>> INDEX = 'fooindex'
     >>> BOOK_DOCTYPE = 'book'
     >>> PERSON_DOCTYPE = 'person'
-    >>> es = get_es(urls=[URL])
+    >>> es = get_es(hosts=[URL])
     >>> es.indices.delete(index=INDEX, ignore=404)
 
 Now define the two document mappings we're going to use: book and person.
@@ -146,7 +146,7 @@ Now let's do some queries so we can see how things work now.
 Let's build a ``basic_s`` that looks at our Elasticsearch cluster and
 the index. Also a ``book_s`` and a ``person_s``.
 
-    >>> basic_s = S().es(urls=[URL]).indexes(INDEX)
+    >>> basic_s = S().es(hosts=[URL]).indexes(INDEX)
     >>> book_s = basic_s.doctypes(BOOK_DOCTYPE)
     >>> person_s = basic_s.doctypes(PERSON_DOCTYPE)
 

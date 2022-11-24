@@ -15,7 +15,7 @@ DOCTYPE = 'testdoc'
 
 # This creates an elasticsearch.Elasticsearch object which we can use
 # to do all our indexing.
-es = get_es(urls=[URL])
+es = get_es(hosts=[URL])
  
 # First, delete the index, ignore possible 404 - it means the index doesn't
 # exist, so there's nothing to delete.
@@ -78,12 +78,12 @@ es.indices.refresh(index=INDEX)
 
 # Let's build a basic S that looks at the right Elasticsearch cluster,
 # index and doctype.
-basic_s = S().es(urls=[URL]).indexes(INDEX).doctypes(DOCTYPE).values_dict()
+basic_s = S().es(hosts=[URL]).indexes(INDEX).doctypes(DOCTYPE).values_dict()
  
 # Now let's see facet counts for all the products.
 s = basic_s.facet('product')
 
-print s.facet_counts()
+print(s.facet_counts())
 # Pretty-printed output:
 # {u'product': {
 #     u'_type': u'terms',
@@ -98,7 +98,7 @@ print s.facet_counts()
 #     }}
 
 # Let's do a query for 'cookie' and do a facet count.
-print s.query(title__match='cookie').facet_counts()
+print(s.query(title__match='cookie').facet_counts())
 # Pretty-printed output:
 # {u'product': {
 #     u'_type': u'terms',
@@ -114,7 +114,7 @@ print s.query(title__match='cookie').facet_counts()
 # Note that the facet_counts are affected by the query.
 
 # Let's do a filter for 'flash' in the topic.
-print s.filter(topics='flash').facet_counts()
+print(s.filter(topics='flash').facet_counts())
 # Pretty-printed output:
 # {u'product': {
 #     u'_type': u'terms',
@@ -132,7 +132,7 @@ print s.filter(topics='flash').facet_counts()
 
 # Let's do a filter for 'flash' in the topic, and specify
 # filtered=True.
-print s.facet('product', filtered=True).filter(topics='flash').facet_counts()
+print(s.facet('product', filtered=True).filter(topics='flash').facet_counts())
 # Pretty-printed output:
 # {u'product': {
 #     u'_type': u'terms',
@@ -150,7 +150,7 @@ print s.facet('product', filtered=True).filter(topics='flash').facet_counts()
 # We've done a bunch of faceting on a field that is not
 # analyzed. Let's look at what happens when we try to use facets on a
 # field that is analyzed.
-print basic_s.facet('topics').facet_counts()
+print(basic_s.facet('topics').facet_counts())
 # Pretty-printed output:
 # {u'topics': {
 #     u'_type': u'terms',

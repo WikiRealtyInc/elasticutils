@@ -53,7 +53,7 @@ file:
 
 .. data:: ES_URLS
 
-   This is a list of Elasticsearch urls. In development this will look
+   This is a list of Elasticsearch hosts. In development this will look
    like::
 
        ES_URLS = ['http://localhost:9200']

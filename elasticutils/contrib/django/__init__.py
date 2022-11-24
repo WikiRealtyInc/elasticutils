@@ -19,8 +19,9 @@ log = logging.getLogger('elasticutils')
 
 
 ES_EXCEPTIONS = (
-    elasticsearch.ElasticsearchException,
-)
+    elasticsearch.exceptions.ElasticsearchException,
+    elasticsearch.exceptions.RequestError,
+) + tuple(e for _, e in elasticsearch.exceptions.HTTP_EXCEPTIONS.items())
 
 
 def get_es(**overrides):
@@ -35,11 +36,11 @@ def get_es(**overrides):
     longer timeout to a different cluster, you'd do:
 
     >>> from elasticutils.contrib.django import get_es
-    >>> es = get_es(urls=['http://some_other_cluster:9200'], timeout=30)
+    >>> es = get_es(hosts=['http://some_other_cluster:9200'], timeout=30)
 
     """
     defaults = {
-        'urls': settings.ES_URLS,
+        'hosts': settings.ES_URLS,
         'timeout': getattr(settings, 'ES_TIMEOUT', 5)
         }
 

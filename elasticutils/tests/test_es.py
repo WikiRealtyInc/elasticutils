@@ -20,13 +20,13 @@ class ESTest(TestCase):
 
         # Use a different url, make sure that gets cached, too, and
         # it's different than the first one.
-        es2 = get_es(urls=['http://example.com:9200'])
+        es2 = get_es(hosts=['http://example.com:9200'])
         eq_(len(_cached_elasticsearch), 2)
         assert id(es) != id(es2)
 
         # Use the same url, but pass it as a string, make sure that
         # pulls the previous one.
-        es3 = get_es(urls='http://example.com:9200')
+        es3 = get_es(hosts='http://example.com:9200')
         eq_(len(_cached_elasticsearch), 2)
         assert id(es2) == id(es3)
 

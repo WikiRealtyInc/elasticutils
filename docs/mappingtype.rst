@@ -130,7 +130,7 @@ Here's an example of a class that subclasses `MappingType` and
 
         @classmethod
         def get_es(cls):
-            return get_es(urls=['http://localhost:9200'])
+            return get_es(hosts=['http://localhost:9200'])
 
         @classmethod
         def get_mapping(cls):

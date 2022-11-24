@@ -201,8 +201,8 @@ elasticsearch-py Elasticsearch object.
 
 Examples::
 
-    q = S().es(urls=['localhost'])
-    q = S().es(urls=['localhost:9200'], timeout=10)
+    q = S().es(hosts=['localhost'])
+    q = S().es(hosts=['localhost:9200'], timeout=10)
 
 See :py:func:`elasticutils.get_es` for the list of arguments you
 can pass in.

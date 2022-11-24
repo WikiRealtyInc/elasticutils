@@ -15,7 +15,7 @@ DOCTYPE = 'testdoc'
 
 # This creates an elasticsearch.Elasticsearch object which we can use
 # to do all our indexing.
-es = get_es(urls=[URL])
+es = get_es(hosts=[URL])
  
 # First, delete the index if it exists.
 es.indices.delete(index=INDEX, ignore=404)
@@ -70,37 +70,32 @@ es.indices.refresh(index=INDEX)
 
 # Let's build a basic S that looks at our Elasticsearch cluster and
 # the index and doctype we just indexed our documents in.
-basic_s = S().es(urls=[URL]).indexes(INDEX).doctypes(DOCTYPE)
+basic_s = S().es(hosts=[URL]).indexes(INDEX).doctypes(DOCTYPE)
 
 # How many documents are in our index?
-print basic_s.count()
+print(basic_s.count())
 # Prints:
 # 5
 
 # Print articles with 'cookie' in the title.
-print [item['title']
-       for item in basic_s.query(title__match='cookie')]
+print([item['title'] for item in basic_s.query(title__match='cookie')])
 # Prints:
 # [u'Deleting cookies', u'What is a cookie?',
 #  u'Websites say cookies are blocked - Unblock them']
 
 # Print articles with 'cookie' in the title that are related to
 # websites.
-print [item['title']
-       for item in basic_s.query(title__match='cookie')
-                          .filter(topics='websites')]
+print([item['title'] for item in basic_s.query(title__match='cookie') .filter(topics='websites')])
 # Prints:
 # [u'Websites say cookies are blocked - Unblock them']
 
 # Print articles in the 'search' topic.
-print [item['title']
-       for item in basic_s.filter(topics='search')]
+print([item['title'] for item in basic_s.filter(topics='search')])
 # Prints:
 # [u'Awesome Bar']
 
 # Do a query and use the highlighter to denote the matching text.
-print [(item['title'], item.es_meta.highlight['title'])
-       for item in basic_s.query(title__match='cookie').highlight('title')]
+print([(item['title'], item.es_meta.highlight['title']) for item in basic_s.query(title__match='cookie').highlight('title')])
 # Prints:
 # [
 #    (u'Deleting cookies', [u'Deleting <em>cookies</em>']),
