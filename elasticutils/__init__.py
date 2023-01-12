@@ -1,29 +1,24 @@
 import copy
 import logging
-from datetime import datetime
-
 import six
+from datetime import datetime
+from elasticsearch import Elasticsearch
+from elasticsearch.client.utils import SKIP_IN_PATH, _make_path
+from elasticsearch.helpers import bulk as bulk_index
 from six import string_types
 
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk as bulk_index
-
-from elasticutils._version import __version__  # noqa
 from elasticutils import monkeypatch
-
+from elasticutils._version import __version__  # noqa
 
 monkeypatch.monkeypatch_es()
 
-
 log = logging.getLogger('elasticutils')
-
 
 # Note: Don't change these--they're not part of the API.
 DEFAULT_URLS = ['localhost']
 DEFAULT_DOCTYPES = None
 DEFAULT_INDEXES = None
 DEFAULT_TIMEOUT = 5
-
 
 #: Valid facet types
 FACET_TYPES = [
@@ -49,7 +44,6 @@ QUERY_ACTION_MAP = {
     'wildcard': 'wildcard',
     'fuzzy': 'fuzzy'
 }
-
 
 #: List of match actions.
 MATCH_ACTIONS = ['match', 'match_phrase']
@@ -104,6 +98,14 @@ def _build_key(urls, timeout, **settings):
 
 
 _cached_elasticsearch = {}
+
+
+def delete_by_query(client: Elasticsearch, index, doc_type=None, body=None, params=None):
+    if index in SKIP_IN_PATH:
+        raise ValueError("Empty value passed for a required argument 'index'.")
+    data = client.transport.perform_request('DELETE', _make_path(index, doc_type, '_query'),
+                                            params=params, body=body)
+    return data
 
 
 def get_es(hosts=None, timeout=DEFAULT_TIMEOUT, force_new=False, **settings):
@@ -260,6 +262,7 @@ class F(object):
     creates a filter "price = 'Free' or style = 'Mexican'".
 
     """
+
     def __init__(self, **filters):
         """Creates an F"""
 
@@ -348,6 +351,7 @@ class Q(object):
     `must` clauses (summary and description).
 
     """
+
     def __init__(self, **queries):
         """Creates a Q"""
         self.should_q = []
@@ -407,6 +411,7 @@ def _boosted_value(name, action, key, value, boost):
 
 class PythonMixin(object):
     """Mixin that provides ES results fixing"""
+
     def to_python(self, obj):
         """Converts strings in a data structure to Python types
 
@@ -531,6 +536,7 @@ class S(PythonMixin):
         s = FunkyS().filter(foo__funkyfilter='bar')
 
     """
+
     def __init__(self, type_=None):
         """Create and return an S.
 
@@ -1173,8 +1179,8 @@ class S(PythonMixin):
                     'boosting': {
                         'negative': self._process_queries([demote[1]]),
                         'negative_boost': demote[0]
-                        }
                     }
+                }
                 if pq:
                     qs['query']['boosting']['positive'] = pq
 
@@ -1275,7 +1281,7 @@ class S(PythonMixin):
 
                 if field_action and hasattr(self, handler_name):
                     rv.append(getattr(self, handler_name)(
-                            key, val, field_action))
+                        key, val, field_action))
 
                 elif key.strip('_') in ('or', 'and', 'not'):
                     connector = key.strip('_')
@@ -1284,7 +1290,7 @@ class S(PythonMixin):
                 elif field_action is None:
                     if val is None:
                         rv.append({'missing': {
-                                    'field': key, "null_value": True}})
+                            'field': key, "null_value": True}})
                     else:
                         rv.append({'term': {key: val}})
 
@@ -1353,8 +1359,8 @@ class S(PythonMixin):
             # we handle them separately.
             return {
                 'range': {field_name: _boosted_value(
-                        field_action, field_action, key, val, boost)}
-           }
+                    field_action, field_action, key, val, boost)}
+            }
 
         elif field_action == 'range':
             lower, upper = val
@@ -1659,6 +1665,7 @@ class MLT(PythonMixin):
     >>> num_related_documents = list(mlt)
 
     """
+
     def __init__(self, id_, s=None, mlt_fields=None, index=None,
                  doctype=None, es=None, **query_params):
         """
@@ -1833,6 +1840,7 @@ class DictSearchResults(SearchResults):
     SearchResults subclass that returns a results in the form of a
     dict.
     """
+
     def set_objects(self, results):
         def listify(d):
             return dict([(key, val if isinstance(val, list) else [val])
@@ -1858,11 +1866,13 @@ class DictSearchResults(SearchResults):
         self.objects = [decorate_with_metadata(DictResult(listify(obj)), r)
                         for obj, r in objs]
 
+
 class ListSearchResults(SearchResults):
     """
     SearchResults subclass that returns a results in the form of a
     tuple.
     """
+
     def set_objects(self, results):
         def listify(values):
             return [(val if isinstance(val, list) else [val])
@@ -1971,6 +1981,7 @@ class MappingType(object):
                 return self.get_model().get(id=self._id)
 
     """
+
     def __init__(self):
         self._results_dict = {}
         self._object = None
